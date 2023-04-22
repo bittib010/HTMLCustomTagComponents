@@ -44,39 +44,39 @@
   </div>
 
   <p>Add it with javascript:</p>
-<p>Boot sector</p>
-
-
+<p>NTFS Boot sector</p>
 
 <script>
   // create a hex-viewer element
   const bootsect = document.createElement('hex-viewer');
 
   // set the hex attribute
-  const boothex = 'E8 52 90 4E 54 46 53 20 20 20 20 00 02 08 00 00 00 00 00 00 00 F8 00 00 3f 00 FF 00 00 A8 03 00 00 00 00 00 80 00 80 00 75 8C 24 4A 00 00 00 00 00 00 0C 00 00 00 00 00 02 00 00 00 00 00 00 00 F6 00 00 00 01 00 00 00 BA 53 DF 78 78 DF 78 D8 00 00 00 00 FA 33 C0 8E D0 BC 00 7C FB 68 C0 07 1F 1E 68 66 00 CB 88 16 0E 00 66 81 3E 03 00 4E 54 46 53 75 15 B4 41 BB AA 55 CD 13 72 0C 81 FB 55 AA 75 06 F7 C1 01 00 75 03 E9 DD 00 1E 83 EC 18 68 1A 00 B4 48 8A 16 0E 00 8B F4 16 1F CD 13 9F 83 C4 18 9E 58 1F 72 E1 3B 06 0B 00 75 DB A3 0F 00 C1 2E 0F 00 04 1E 5A 33 DB B9 00 20 2B C8 66 FF 06 11 00 03 16 0F 00 8E C2 FF 06 16 00 E8 4B 00 2B C8 77 EF B8 00 BB CD 1A 66 23 C0 75 2D 66 81 FB 54 43 50 41 75 24 81 F9 02 01 72 1E 16 68 07 BB 16 68 52 11 16 68 09 00 66 53 66 53 66 55 16 16 16 68 B8 01 66 61 0E 07 CD 1A 33 C0 BF 0A 13 B9 F6 0C FC F3 AA E9 FE 01 90 90 66 60 1E 06 66 A1 11 00 66 03 06 1C 00 1E 66 68 00 00 00 00 66 50 06 53 68 01 00 68 10 00 B4 42 8A 16 0E 00 16 1F 8B F4 CD 13 66 59 5B 5A 66 59 66 59 1F 0F 82 16 00 66 FF 06 11 00 03 16 0F 00 8E C2 FF 0E 16 00 75 BC 07 1F 66 61 C3 A1 F6 01 E8 09 00 A1 FA 01 E8 03 00 F4 EB FD 8B F0 AC 3C 00 74 09 B4 0E BB 07 00 CD 10 EB F2 C3 0D 0A 41 20 64 69 73 6B 20 72 65 61 64 20 65 72 72 6F 72 20 6F 63 63 75 72 72 65 64 00 0D 0A 42 4F 4F 54 4D 47 52 20 69 73 20 63 6F 6D 70 72 65 73 73 65 64 00 0D 0A 50 72 65 73 73 20 43 74 72 6C 2B 41 6C 74 2B 44 65 6C 20 74 6F 20 72 65 73 74 61 72 74 0D 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 8A 01 A7 01 BF 01 00 00 55 AA';
+  const boothex = 'EB 52 90 4E 54 46 53 20 20 20 20 00 02 08 00 00 00 00 00 00 00 F8 00 00 3f 00 FF 00 00 A8 03 00 00 00 00 00 80 00 80 00 75 8C 24 4A 00 00 00 00 00 00 0C 00 00 00 00 00 02 00 00 00 00 00 00 00 F6 00 00 00 01 00 00 00 BA 53 DF 78 78 DF 78 D8 00 00 00 00 FA 33 C0 8E D0 BC 00 7C FB 68 C0 07 1F 1E 68 66 00 CB 88 16 0E 00 66 81 3E 03 00 4E 54 46 53 75 15 B4 41 BB AA 55 CD 13 72 0C 81 FB 55 AA 75 06 F7 C1 01 00 75 03 E9 DD 00 1E 83 EC 18 68 1A 00 B4 48 8A 16 0E 00 8B F4 16 1F CD 13 9F 83 C4 18 9E 58 1F 72 E1 3B 06 0B 00 75 DB A3 0F 00 C1 2E 0F 00 04 1E 5A 33 DB B9 00 20 2B C8 66 FF 06 11 00 03 16 0F 00 8E C2 FF 06 16 00 E8 4B 00 2B C8 77 EF B8 00 BB CD 1A 66 23 C0 75 2D 66 81 FB 54 43 50 41 75 24 81 F9 02 01 72 1E 16 68 07 BB 16 68 52 11 16 68 09 00 66 53 66 53 66 55 16 16 16 68 B8 01 66 61 0E 07 CD 1A 33 C0 BF 0A 13 B9 F6 0C FC F3 AA E9 FE 01 90 90 66 60 1E 06 66 A1 11 00 66 03 06 1C 00 1E 66 68 00 00 00 00 66 50 06 53 68 01 00 68 10 00 B4 42 8A 16 0E 00 16 1F 8B F4 CD 13 66 59 5B 5A 66 59 66 59 1F 0F 82 16 00 66 FF 06 11 00 03 16 0F 00 8E C2 FF 0E 16 00 75 BC 07 1F 66 61 C3 A1 F6 01 E8 09 00 A1 FA 01 E8 03 00 F4 EB FD 8B F0 AC 3C 00 74 09 B4 0E BB 07 00 CD 10 EB F2 C3 0D 0A 41 20 64 69 73 6B 20 72 65 61 64 20 65 72 72 6F 72 20 6F 63 63 75 72 72 65 64 00 0D 0A 42 4F 4F 54 4D 47 52 20 69 73 20 63 6F 6D 70 72 65 73 73 65 64 00 0D 0A 50 72 65 73 73 20 43 74 72 6C 2B 41 6C 74 2B 44 65 6C 20 74 6F 20 72 65 73 74 61 72 74 0D 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 8A 01 A7 01 BF 01 00 00 55 AA';
   bootsect.setAttribute('hex', boothex);
 
   // set the info attribute
   const bootinfo = JSON.stringify(
     [
-    [0, 3, 'Jump code (short jump, offset, NOP: 0xEB 0x52 0x90)'],
-    [4, 12, 'OEM name ("NTFS")'],
-    [13, 14, 'Bytes per sector (512 = 0x0200)\nThis section also marks the start of the Bios Parameter Block which ends right before the Bootstrap code starts.'],
-    [15, 15, 'Sectors per cluster (0x08)'],
-    [16, 22, 'Must be zeros to distinguish NTFS from FAT. The two first bytes are considered reserved. The next three bytes are always zero and the last two are unused.'],
-    [23, 23, 'Media descriptor (0xF8). This will most often be 0xF8 which means Harddisk.'],
-    [24, 25, 'Must be zeros.'],
-    [26, 27, 'Sectors per track.'],
-    [28, 29, 'Number of heads (probably 0xFF).'],
-    [30, 33, 'Hidden sectors (sectors before the partition)'],
-    [34, 37, 'Must be zeros'],
-    [38, 41, 'Signature (0x80 0x00 0x80 0x00). This value indicates an NTFS filesystem.'],
+    [0, 2, 'Jump instructions (short jump, offset, NOP: 0xEB 0x52 0x90)<br><b>Type: </b>LONGLONG'],
+    [3, 10, 'OEM ID/name ("NTFS")'],
+    [11, 12, '<h1>Bios Parameter Block</h1>The data fields succeeding the BPB on NTFS volumes constitute an extended BPB. This additional information assists the Ntldr (NT loader program) in locating the master file table (MFT) during system startup. Unlike on FAT16 and FAT32 volumes, the MFT is not fixed to a specific sector on NTFS volumes. Consequently, if there is a defective sector in its usual position, the MFT can be relocated. Nevertheless, if the data becomes corrupted, Windows will be unable to locate the MFT, causing it to assume that the volume has not undergone formatting.  The BPB block is 25 bytes long, ends when bootstrap code begins.<br>This sequence means bytes per sector (512 = 0x0200).'],
+    [13, 13, 'Sectors per cluster (0x08)'],
+    [14, 15, 'Reserved sectors'],
+    [16, 18, 'Are always set to 0.'],
+    [19, 20, 'Not in use by NTFS'],
+    [21, 21, 'Media descriptor (0xF8). This will most often be 0xF8 which means Harddisk.'],
+    [22, 23, 'Must be zeros.'],
+    [24, 25, 'Sectors per track.'],
+    [26, 27, 'Number of heads (probably 0xFF).'],
+    [28, 31, 'Hidden sectors (sectors before the partition)'],
+    [32, 35, 'Must be zeros'],
+    [36, 39, 'Signature (0x80 0x00 0x80 0x00). This value indicates an NTFS filesystem. (http://ntfs.com/ntfs-partition-boot-sector.htm states that it is not used by NTFS - is this the verification that it indeed is NTFS?)'],
     [42, 49, 'Total sectors in volume.'],
     [50, 57, '$MFT cluster number.\nStarting logical cluster number for MFT'],
     [58, 65, '$MFTMirr cluster number.\nStarting logical cluster number for MFT mirror.'],
     [66, 69, 'Clusters per file record segment (see text for interpretation).'],
     [70, 70, 'Clusters per index buffer/index block (1)'],
-    [71, 73, 'Must be zeros.'],
+    [71, 73, 'Must be zeros (Not in use by NTFS).'],
     [74, 81, 'Volume serial number.'],
     [82, 85, 'Currently unused checksum value.'],
     [86, 509, 'Bootstrap code.'],
