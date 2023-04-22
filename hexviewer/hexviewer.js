@@ -10,12 +10,11 @@ class AsciiHexElement extends HTMLElement {
     this.prev_max_indx = 1;
     this.rrbga = "#fff";
   }
-
   connectedCallback() {
+    this.attachListenerssss();
     this.innerHTML = this.render();
     this.attachListeners();
   }
-
   attachListeners() {
     this.addEventListener('click', (event) => {
       const cell = event.target.closest('td');
@@ -25,11 +24,45 @@ class AsciiHexElement extends HTMLElement {
       }
     });
   }
+  attachListenerssss() {
+    document.addEventListener("keyup", function (e) {
+      var selectedHTML,
+        key = e.key;
+      if (key == "Shift") {
+        // if "shift" key was released 
+        selectedHTML = getSelectionHtml();
+        if (selectedHTML) {
+          // get the selected elements
+          var selectedElements = window
+            .getSelection()
+            .getRangeAt(0)
+            .cloneContents()
+            .querySelectorAll("td");
+          var values = [];
+          // print the tag ID of each selected element
+          for (var i = 0; i < selectedElements.length; i++) {
+            values.push(parseInt(selectedElements[i].id))
+          }
 
+          var highIndex = highLow(values)[0];
+          var lowIndex = highLow(values)[1];
+
+          if (highIndex < lowIndex) {
+            temp = highIndex;
+            highIndex = lowIndex;
+            lowIndex = temp;
+          }
+          //alert("High Index: " + highIndex + "\nLow Index: " + lowIndex);
+          console.log("High Index: " + highIndex + "\nLow Index: " + lowIndex);
+
+
+        }
+      }
+    })
+  }
   render() {
     this.hexNums = this.hexNums.split(" ");
     this.ASCIIHex = this.ASCIIHex.split(" ");
-    console.log(this.hexNums);
 
     let table1 = '';
     let table2 = '';
@@ -38,7 +71,7 @@ class AsciiHexElement extends HTMLElement {
       table2 += '<tr>';
       for (let j = i; j < i + this.lineshift; j++) {
         if (this.hexNums[j] == null || this.hexNums[j] == "") {
-          this.hexNums[j] = " ";
+          this.hexNums[j] = "";
         }
 
         let foundSeq = false;
@@ -46,18 +79,17 @@ class AsciiHexElement extends HTMLElement {
           if (this.indexInfo[t][0] === j) {
             this.rrbga = this.random_rgba();
             foundSeq = true;
-            console.log(this.indexInfo[t][0]);
             break;
           } else if (j >= this.indexInfo[t][0] && j <= this.indexInfo[t][1]) {
             foundSeq = true;
             break;
           }
         }
-        
+
         if (!foundSeq) {
           this.rrbga = "#fff"; // default color
         }
-        
+
         const td_col_1 = document.createElement("td");
         td_col_1.id = j;
         td_col_1.textContent = this.hex2a(this.hexNums[j]);
@@ -76,27 +108,24 @@ class AsciiHexElement extends HTMLElement {
     }
     table1 = `<table ">${table1}</table>`;
     table2 = `<table ">${table2}</table>`;
-    
+
     const div_col1 = `<div class="col-1">${table1}</div>`;
     const div_col2 = `<div class="col-2">${table2}</div>`;
     this.current_html = `${div_col1}${div_col2}<div class="info-frame col"></div>`;
     return this.current_html;
   }
-
   hex2a(hex) {
     var str = '';
     for (var i = 0; i < hex.length; i += 2) {
       var v = parseInt(hex.substr(i, 2), 16);
       if (v > 32) { // could add other chars here
         str += String.fromCharCode(v);
-      }else{
+      } else {
         str += ".";
       }
     }
     return str;
   }
-
-
   showInfo(index, indexInfo) {
     for (let i = 0; i < indexInfo.length; i++) {
       if (index >= indexInfo[i][0] && index <= indexInfo[i][1]) {
@@ -113,7 +142,30 @@ class AsciiHexElement extends HTMLElement {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + (0.2 + (r() * 0.3)).toFixed(1) + ')';
   }
-
 }
 
 customElements.define('hex-viewer', AsciiHexElement);
+
+function getSelectionHtml() {
+  var html = "";
+  if (typeof window.getSelection != "undefined") {
+    var sel = window.getSelection();
+    if (sel.rangeCount) {
+      var container = document.createElement("div");
+      for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+        container.appendChild(sel.getRangeAt(i).cloneContents());
+      }
+      html = container.innerHTML;
+    }
+  } else if (typeof document.selection != "undefined") {
+    if (document.selection.type == "Text") {
+      html = document.selection.createRange().htmlText;
+    }
+  }
+  return html;
+}
+
+function highLow(arr) {
+  // Return the highest and lowest number in an array
+  return [Math.max(...arr), Math.min(...arr)];
+}

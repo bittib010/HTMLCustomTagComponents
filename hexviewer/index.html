@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Website</title>
+  <!-- Add CSS links here -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Custom tags examples</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Services</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container">
+    <h1>Hex-viewer</h1>
+    <p>By leveraging a simple tag called "hex-viewer", you can simply add strings (without) line breaks for hex and the
+      infor for a sequence and it will appear like this:.</p>
+  </div>
+
+  <p>Add it with javascript:</p>
+    <script>
+      // create a hex-viewer element
+      const hexViewer = document.createElement('hex-viewer');
+
+      // set the hex attribute
+      const hex = '48 65 6c 6c 6f 20 57 6f 72 6c 64';
+      hexViewer.setAttribute('hex', hex);
+
+      // set the info attribute
+      const info = JSON.stringify(
+        [
+          [0, 3, 'Header'], 
+          [4, 10, 'Body']
+        ]
+        );
+      hexViewer.setAttribute('info', info);
+
+      // append the hex-viewer element to the body
+      document.body.appendChild(hexViewer);
+    </script>
+<p>... or by using the html custom tag directly.</p>
+  <hex-viewer
+    hex="FF D8 FF E0 00 10 4A 46 49 46 00 01 01 01 00 00 90 00 00 FF E1 22 45 78 69 66 00 00 4D 4D 00 2A 00 00 00 08 00 01 12 00 03 00 00 00 01 00 01 00 00 00 00 00 00 FF DB 00 43 00 02 01 01 02 01 01 "
+    info='[[0, 1, "<ul><li>Length: 2 bytes</li></ul> <br>JPG images always start with the byte sequence 0xFFD8 at the start of image. <br> You can see that the first four bytes have the value 0xFFD8FFE0, which represents the APP0 marker. An APP1 marker would be 0xFFD8FFE1."],[2, 3, "<ul><li>Length: 2 bytes</li></ul> <br>Application UseMarker(APP0 Marker). This is the identifier. This zero-terminatedstring (0xJFIF) uniquely identifies this APP0 marker. This string shall have zero parity (bit 7=0)."],[4, 5, "<ul><li>Length: 2 bytes</li></ul> <br>Length of APP0 Field"],[6, 9, "<ul><li>Length: 5 bytes, but may vary</li></ul> <br>JFIF(zero terminated) Id string."],[10, 11, "<ul><li>Length: 2 bytes</li></ul> <br>JFIF FormatRevision. In other words, this is the version. The major versionequals the most significant byte and the minor version equals theleast significant byte. Which means that 0x0001 is version number1.00."]]'></hex-viewer>
+  <script src="hexviewer.js"></script>
+  <!-- Add JavaScript links here -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
