@@ -30,3 +30,24 @@ div.info-frame {
   border-left: 0.2rem dotted #ccc;
   padding: 1rem;
 }
+
+
+
+
+/* Horisontal highlighting (rows)*/
+body:not(.nohover) tbody tr:hover {
+  background-color: white;
+  box-shadow: black;
+}
+
+td:hover::after, th:hover::after {
+  background-color: white;
+  box-shadow: black;
+
+}
+
+td:focus::after, th:focus::after {
+  background-color: white;
+  box-shadow: black;
+
+}
