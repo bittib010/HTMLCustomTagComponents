@@ -2,7 +2,7 @@
 
 
 ## Hexviewer
-Here is a live example: [Hexviewer Github Pages](https://bittib010.github.io/HTMLCustomTagComponents/hexviewer/index.html). Try clicking on the sequences that has color. (And do not take any lessons from the information - its copy paste from dummy data and/or partially correct data)
+Here is a live example: [Hexviewer Github Pages](https://bittib010.github.io/HTMLCustomTagComponents/hexviewer/index.html). Try clicking on the sequences that has color.
 
 If you want to make an interactive hex-view to show of file headers or anything you've researched, simply add the javascript and the css to get it done.
 
