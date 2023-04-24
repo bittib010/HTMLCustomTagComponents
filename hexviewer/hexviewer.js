@@ -14,8 +14,7 @@ class AsciiHexElement extends HTMLElement {
     this.attachListenerssss();
     this.innerHTML = this.render();
     this.attachListeners();
-    this.row_col_listener_ascii();
-    this.row_col_listener_hex();
+    this.row_col_listener();
   }
   attachListeners() {
     this.addEventListener('click', (event) => {
@@ -63,53 +62,30 @@ class AsciiHexElement extends HTMLElement {
     })
   }
 
+row_col_listener() {
+  const tables = document.querySelectorAll('table');
+  tables.forEach(table => {
+    const cells = table.getElementsByTagName('td');
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].addEventListener('mouseover', function () {
+        const currentRow = this.parentNode.rowIndex;
+        const currentCol = this.cellIndex;
 
-row_col_listener_hex() {
-  let table = document.getElementsByTagName('table')[1];
-  let cells = table.getElementsByTagName('td');
-  for (let i = 0; i < cells.length; i++) {
-    cells[i].addEventListener('mouseover', function () {
-      let currentRow = this.parentNode.rowIndex;
-      let currentCol = this.cellIndex;
+        for (let j = 0; j < table.rows.length; j++) {
+          table.rows[j].cells[currentCol].style.opacity = '0.7';
+        }
+        for (let k = 0; k < this.parentNode.cells.length; k++) {
+          this.parentNode.cells[k].style.opacity = '0.7';
+        }
+      });
 
-      for (let j = 0; j < table.rows.length; j++) {
-        table.rows[j].cells[currentCol].style.opacity = '0.7';
-      }
-      for (let k = 0; k < this.parentNode.cells.length; k++) {
-        this.parentNode.cells[k].style.opacity = '0.7';
-      }
-    });
-
-    cells[i].addEventListener('mouseout', function () {
-      for (let j = 0; j < cells.length; j++) {
-        cells[j].style.opacity = '1';
-      }
-    });
-  }
-}
-
-row_col_listener_ascii() {
-  let table = document.getElementsByTagName('table')[0];
-  let cells = table.getElementsByTagName('td');
-  for (let i = 0; i < cells.length; i++) {
-    cells[i].addEventListener('mouseover', function () {
-      let currentRow = this.parentNode.rowIndex;
-      let currentCol = this.cellIndex;
-
-      for (let j = 0; j < table.rows.length; j++) {
-        table.rows[j].cells[currentCol].style.opacity = '0.7';
-      }
-      for (let k = 0; k < this.parentNode.cells.length; k++) {
-        this.parentNode.cells[k].style.opacity = '0.7';
-      }
-    });
-
-    cells[i].addEventListener('mouseout', function () {
-      for (let j = 0; j < cells.length; j++) {
-        cells[j].style.opacity = '1';
-      }
-    });
-  }
+      cells[i].addEventListener('mouseout', function () {
+        for (let j = 0; j < cells.length; j++) {
+          cells[j].style.opacity = '1';
+        }
+      });
+    }
+  });
 }
 
 render() {
