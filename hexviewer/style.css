@@ -33,21 +33,27 @@ div.info-frame {
 
 
 
-
-/* Horisontal highlighting (rows)*/
-body:not(.nohover) tbody tr:hover {
-  background-color: white;
-  box-shadow: black;
+/*
+table:hover td {
+  opacity: 0.5;
 }
 
-td:hover::after, th:hover::after {
-  background-color: white;
-  box-shadow: black;
-
+tr:hover td {
+  opacity: 1;
 }
 
-td:focus::after, th:focus::after {
-  background-color: white;
-  box-shadow: black;
-
+tr:hover td:nth-child(1),
+tr td:hover:nth-child(1) {
+  opacity: 1;
 }
+
+tr:hover td:nth-child(2),
+tr td:hover:nth-child(2) {
+  opacity: 1;
+}
+
+tr:hover td:nth-child(3),
+tr td:hover:nth-child(3) {
+  opacity: .5;
+}
+*/
