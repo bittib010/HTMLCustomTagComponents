@@ -40,12 +40,12 @@
   <!-- Main content -->
   <div class="container">
     <h1>Hex-viewer</h1>
-    <p>By leveraging a simple tag called "hex-viewer", you can simply add hex data separated with spaces and no line breaks for the hex attribute and a list of lists for [[startindex, endindex, "info"]] for a hex sequence. If you are doing analysis on an unknown hex sequence or file, you can mark the sequence and press SHIFT to get the range printed to the console (F12). (this sequence finder may be buggy, but it works best if you mark only the text on the first cell, and not the whole element - on large datasets you'll be needing this to avoid counting).</p>
+    <p>Use a simple HTML custom tag to show your hex data snippets with information. By leveraging a simple tag called "hex-viewer", you can simply add hex-strings for the hex attribute and a sequence of offsets and related information for the info attribute. The offset of the cell is printed on the top of each hex-viewer element./p>
   </div>
 
   <p>Add it with javascript:</p>
 <p>NTFS Boot sector</p>
-
+<div>
 <script>
   // create a hex-viewer element
   const bootsect = document.createElement('hex-viewer');
@@ -88,7 +88,7 @@
   // append the hex-viewer element to the body
   document.body.appendChild(bootsect);
 </script>
-
+</div>
 
 
 
