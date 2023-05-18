@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mind Map Generator</title>
+</head>
+<body>
+    <mind-map>
+        [
+          {
+            "text": "Root",
+            "children": [
+              {
+                "text": "Child 1"
+              },
+              {
+                "text": "Child 2",
+                "children": [
+                  {
+                    "text": "Grandchild 1"
+                  },
+                  {
+                    "text": "Grandchild 2"
+                  }
+                ]
+              },
+              {
+                "text": "Child 3"
+              }
+            ]
+          }
+        ]
+      </mind-map>
+  <script>
+    class MindMap extends HTMLElement {
+      constructor() {
+        super();
+
+        // Create a shadow root for the custom element
+        this.attachShadow({ mode: 'open' });
+
+        // Create a container for the mind map
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.height = '600px';
+        this.shadowRoot.appendChild(container);
+
+        // Parse the nested list from the custom element's content
+        const nestedList = JSON.parse(this.textContent);
+
+        // Generate the mind map SVG
+        const svg = this.generateMindMapSVG(nestedList);
+
+        // Create a new SVG element
+        const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        svgElement.setAttribute('width', '100%');
+        svgElement.setAttribute('height', '100%');
+        svgElement.setAttribute('version', '1.1');
+        svgElement.innerHTML = svg;
+
+        // Append the SVG element to the container
+        container.appendChild(svgElement);
+      }
+
+      generateMindMapSVG(nestedList) {
+        const nodeWidth = 120;
+        const nodeHeight = 50;
+        const marginX = 40;
+        const marginY = 40;
+
+        let currentX = 0;
+        let currentY = 0;
+
+        let svg = '';
+
+        // Recursive function to generate SVG nodes and lines
+        const generateNodes = (list, parentX, parentY, depth) => {
+          const nodeX = parentX;
+          const nodeY = parentY + marginY;
+
+          svg += `<rect x="${nodeX}" y="${nodeY}" width="${nodeWidth}" height="${nodeHeight}" fill="lightblue" stroke="gray" stroke-width="2" />`;
+
+          list.forEach(item => {
+            const text = item.text;
+            const lineY = parentY + nodeHeight;
+            const lineX1 = parentX + nodeWidth / 2;
+            const lineX2 = parentX + nodeWidth / 2;
+
+            svg += `<text x="${nodeX + nodeWidth / 2}" y="${nodeY + nodeHeight / 2}" font-family="Arial" font-size="12pt" text-anchor="middle" alignment-baseline="central">${text}</text>`;
+
+            if (item.children) {
+              const childrenY = currentY + nodeHeight + marginY;
+              const childrenX = generateNodes(item.children, parentX + marginX + nodeWidth, childrenY, depth + 1);
+
+              const lineX = parentX + nodeWidth / 2;
+              const lineY1 = lineY + (childrenY - lineY) / 2;
+              const lineY2 = childrenY;
+
+              svg += `<line x1="${lineX1}" y1="${lineY1}" x2="${lineX2}" y2="${lineY2}" stroke="gray" stroke-width="1" />`;
+              svg += `<line x1="${lineX2}" y1="${lineY2}" x2="${childrenX + marginX + nodeWidth / 2}" y2="${lineY2}" stroke="gray" stroke-width="1" />`;
+
+              currentY= childrenY;
+            }
+
+            currentX = Math.max(currentX, parentX + marginX + nodeWidth);
+            currentY = Math.max(currentY, nodeY + nodeHeight + marginY);
+          });
+
+          return currentX;
+        };
+
+        generateNodes(nestedList, 0, 0, 0);
+
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" version="1.1">${svg}</svg>`;
+      }
+    }
+
+    // Define the custom element tag name
+    customElements.define('mind-map', MindMap);
+  </script>
+</body>
+</html>
+

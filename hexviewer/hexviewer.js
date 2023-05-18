@@ -34,7 +34,7 @@ class AsciiHexElement extends HTMLElement {
         const index = parseInt(cell.id);
         const offset = this.querySelector('.offset');
         if (offset) {
-          offset.innerHTML = index;
+          offset.innerHTML = "Offset: " + index;
         }
       }
     });
@@ -118,7 +118,7 @@ class AsciiHexElement extends HTMLElement {
 
     const div_col1 = `<div class="col-1">${table1}</div>`;
     const div_col2 = `<div class="col-2">${table2}</div>`;
-    this.current_html = `<div class="outer-wrapper"><div class="upper_opts"><span class="hex-tabs">Offset: <span class="offset"></span> </span><span class="hex-tabs"><input type="text" id="hex-width" placeholder="Width"></span></div><div class="hex-wrapper">${div_col1}${div_col2}<div class="info-frame col"></div></div></div>`;
+    this.current_html = `<div class="outer-wrapper"><div class="upper_opts"><span class="hex-tabs"><span class="offset"></span> </span><span class="hex-tabs"><input type="text" id="hex-width" placeholder="Width"></span></div><div class="hex-wrapper">${div_col1}${div_col2}<div class="info-frame col"></div></div></div>`;
     return this.current_html;
   }
   hex2a(hex) {
