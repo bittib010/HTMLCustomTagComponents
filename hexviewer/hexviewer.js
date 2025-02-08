@@ -15,6 +15,7 @@ class AsciiHexElement extends HTMLElement {
     this.attachListeners();
     this.row_col_listener();
     this.changeOffsetListener();
+    this.changeWidthListener();
   }
 
   attachListeners() {
@@ -65,7 +66,23 @@ class AsciiHexElement extends HTMLElement {
       }
     });
   }
- 
+
+  changeWidthListener() {
+    const widthInput = this.querySelector('#hex-width');
+    if (widthInput) {
+      widthInput.addEventListener('input', (event) => {
+        const newWidth = parseInt(event.target.value);
+        if (!isNaN(newWidth) && newWidth > 0) {
+          this.lineshift = newWidth;
+          this.innerHTML = this.render();
+          this.attachListeners();
+          this.row_col_listener();
+          this.changeOffsetListener();
+          this.changeWidthListener();
+        }
+      });
+    }
+  }
 
   render() {
     this.hexNums = this.hexNums.split(" ");
@@ -113,8 +130,8 @@ class AsciiHexElement extends HTMLElement {
       table1 += "</tr>";
       table2 += "</tr>";
     }
-    table1 = `<table ">${table1}</table>`;
-    table2 = `<table ">${table2}</table>`;
+    table1 = `<table class="table table-bordered">${table1}</table>`;
+    table2 = `<table class="table table-bordered">${table2}</table>`;
 
     const div_col1 = `<div class="col-1">${table1}</div>`;
     const div_col2 = `<div class="col-2">${table2}</div>`;
