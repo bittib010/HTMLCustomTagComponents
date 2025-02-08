@@ -42,6 +42,15 @@ Or you can add it with html. This way is more proned to errors when formatting i
     info='[[0, 1, "<ul><li>Length: 2 bytes</li></ul> <br>JPG images always start with the byte sequence 0xFFD8 at the start of image. <br> You can see that the first four bytes have the value 0xFFD8FFE0, which represents the APP0 marker. An APP1 marker would be 0xFFD8FFE1."],[2, 3, "<ul><li>Length: 2 bytes</li></ul> <br>Application UseMarker(APP0 Marker). This is the identifier. This zero-terminatedstring (0xJFIF) uniquely identifies this APP0 marker. This string shall have zero parity (bit 7=0)."],[4, 5, "<ul><li>Length: 2 bytes</li></ul> <br>Length of APP0 Field"],[6, 9, "<ul><li>Length: 5 bytes, but may vary</li></ul> <br>JFIF(zero terminated) Id string."],[10, 11, "<ul><li>Length: 2 bytes</li></ul> <br>JFIF FormatRevision. In other words, this is the version. The major versionequals the most significant byte and the minor version equals theleast significant byte. Which means that 0x0001 is version number1.00."]]'></hex-viewer>
 ```
 
+### Using the markdown attribute
+
+You can also use the `markdown` attribute to render markdown content as HTML within the hex-viewer element. This can be useful for displaying formatted text, such as headers, lists, and links.
+
+Here is an example of using the `markdown` attribute:
+
+```html
+<hex-viewer markdown="# Markdown Example\n\nThis is an example of using the markdown attribute in the hex-viewer element."></hex-viewer>
+```
 
 Improvements:
 - offsets for the hex

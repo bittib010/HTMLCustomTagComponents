@@ -1,112 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Custom elements</title>
-  <!-- Add CSS links here -->
+  <title>Custom Elements - Hex Viewer</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
-
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="../index.html">Custom elements</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <!--li class="nav-item active">
-          <a class="nav-link" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Services</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-        </li-->
-      </ul>
+    <div class="container">
+      <a class="navbar-brand" href="../index.html">Custom Elements</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav"></ul>
+      </div>
     </div>
   </nav>
 
-  <!-- Main content -->
-  <div class="container">
-    <h1>Hex-viewer</h1>
-    <p>Use a simple HTML custom tag to show your hex data snippets with information. By leveraging a simple tag called "hex-viewer", you can simply add hex-strings for the hex attribute and a sequence of offsets and related information for the info attribute. The offset of the cell is printed on the top of each hex-viewer element./p>
+  <!-- Main Content -->
+  <div class="container my-4">
+    <h1 class="mb-3">Hex Viewer</h1>
+    <p>
+      Use a simple HTML custom tag to show your hex data snippets with information. By leveraging the "hex-viewer" tag,
+      you can add hex-strings for the <code>hex</code> attribute and offsets with related info for the <code>info</code>
+      attribute.
+    </p>
+    <p>
+      The offset of the cell is printed on the top of each hex-viewer element. You can also use the "markdown"
+      attribute to render markdown content.
+    </p>
+
+    <h2 class="mt-4">Example: Add with JavaScript</h2>
+    <p>NTFS Boot sector</p>
+    <div id="hex-container"></div>
   </div>
 
-  <p>Add it with javascript:</p>
-<p>NTFS Boot sector</p>
-<div>
-<script>
-  // create a hex-viewer element
-  const bootsect = document.createElement('hex-viewer');
-
-  // set the hex attribute
-  const boothex = 'EB 52 90 4E 54 46 53 20 20 20 20 00 02 08 00 00 00 00 00 00 00 F8 00 00 3f 00 FF 00 00 A8 03 00 00 00 00 00 80 00 80 00 75 8C 24 4A 00 00 00 00 00 00 0C 00 00 00 00 00 02 00 00 00 00 00 00 00 F6 00 00 00 01 00 00 00 BA 53 DF 78 78 DF 78 D8 00 00 00 00 FA 33 C0 8E D0 BC 00 7C FB 68 C0 07 1F 1E 68 66 00 CB 88 16 0E 00 66 81 3E 03 00 4E 54 46 53 75 15 B4 41 BB AA 55 CD 13 72 0C 81 FB 55 AA 75 06 F7 C1 01 00 75 03 E9 DD 00 1E 83 EC 18 68 1A 00 B4 48 8A 16 0E 00 8B F4 16 1F CD 13 9F 83 C4 18 9E 58 1F 72 E1 3B 06 0B 00 75 DB A3 0F 00 C1 2E 0F 00 04 1E 5A 33 DB B9 00 20 2B C8 66 FF 06 11 00 03 16 0F 00 8E C2 FF 06 16 00 E8 4B 00 2B C8 77 EF B8 00 BB CD 1A 66 23 C0 75 2D 66 81 FB 54 43 50 41 75 24 81 F9 02 01 72 1E 16 68 07 BB 16 68 52 11 16 68 09 00 66 53 66 53 66 55 16 16 16 68 B8 01 66 61 0E 07 CD 1A 33 C0 BF 0A 13 B9 F6 0C FC F3 AA E9 FE 01 90 90 66 60 1E 06 66 A1 11 00 66 03 06 1C 00 1E 66 68 00 00 00 00 66 50 06 53 68 01 00 68 10 00 B4 42 8A 16 0E 00 16 1F 8B F4 CD 13 66 59 5B 5A 66 59 66 59 1F 0F 82 16 00 66 FF 06 11 00 03 16 0F 00 8E C2 FF 0E 16 00 75 BC 07 1F 66 61 C3 A1 F6 01 E8 09 00 A1 FA 01 E8 03 00 F4 EB FD 8B F0 AC 3C 00 74 09 B4 0E BB 07 00 CD 10 EB F2 C3 0D 0A 41 20 64 69 73 6B 20 72 65 61 64 20 65 72 72 6F 72 20 6F 63 63 75 72 72 65 64 00 0D 0A 42 4F 4F 54 4D 47 52 20 69 73 20 63 6F 6D 70 72 65 73 73 65 64 00 0D 0A 50 72 65 73 73 20 43 74 72 6C 2B 41 6C 74 2B 44 65 6C 20 74 6F 20 72 65 73 74 61 72 74 0D 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 8A 01 A7 01 BF 01 00 00 55 AA';
-  bootsect.setAttribute('hex', boothex);
-
-  // set the info attribute
-  const bootinfo = JSON.stringify(
-    [
-    [0, 2, 'Jump instructions (short jump, offset, NOP: 0xEB 0x52 0x90)<br><b>Type: </b>LONGLONG'],
-    [3, 10, 'OEM ID/name ("NTFS")'],
-    [11, 12, '<h1>Bios Parameter Block</h1>The data fields succeeding the BPB on NTFS volumes constitute an extended BPB. This additional information assists the Ntldr (NT loader program) in locating the master file table (MFT) during system startup. Unlike on FAT16 and FAT32 volumes, the MFT is not fixed to a specific sector on NTFS volumes. Consequently, if there is a defective sector in its usual position, the MFT can be relocated. Nevertheless, if the data becomes corrupted, Windows will be unable to locate the MFT, causing it to assume that the volume has not undergone formatting.  The BPB block is 25 bytes long, ends when bootstrap code begins.<br>This sequence means bytes per sector (512 = 0x0200).'],
-    [13, 13, 'Sectors per cluster (0x08)'],
-    [14, 15, 'Reserved sectors'],
-    [16, 18, 'Are always set to 0.'],
-    [19, 20, 'Not in use by NTFS'],
-    [21, 21, 'Media descriptor (0xF8). This will most often be 0xF8 which means Harddisk.'],
-    [22, 23, 'Must be zeros.'],
-    [24, 25, 'Sectors per track.'],
-    [26, 27, 'Number of heads (probably 0xFF).'],
-    [28, 31, 'Hidden sectors (sectors before the partition)'],
-    [32, 35, 'Must be zeros'],
-    [36, 39, 'Signature (0x80 0x00 0x80 0x00). This value indicates an NTFS filesystem. (http://ntfs.com/ntfs-partition-boot-sector.htm states that it is not used by NTFS - is this the verification that it indeed is NTFS?)'],
-    [40, 49, 'Total sectors in volume.'],
-    [50, 57, '$MFT cluster number.\nStarting logical cluster number for MFT'],
-    [58, 65, '$MFTMirr cluster number.\nStarting logical cluster number for MFT mirror.'],
-    [66, 69, 'Clusters per file record segment (see text for interpretation).'],
-    [70, 70, 'Clusters per index buffer/index block (1)'],
-    [71, 73, 'Must be zeros (Not in use by NTFS).'],
-    [74, 81, 'Volume serial number.'],
-    [82, 85, 'Currently unused checksum value.'],
-    [86, 509, 'Bootstrap code.'],
-    [510, 511, 'Signature (0x55 0xAA).']
-    ]
-    );
+  <script>
+    const bootsect = document.createElement('hex-viewer');
+    const boothex = 'EB 52 90 4E 54 46 53 20 20 20 ... 55 AA';
+    bootsect.setAttribute('hex', boothex);
+    const bootinfo = JSON.stringify([
+      [0, 2, 'Jump instructions (0xEB 0x52 0x90)'],
+      [3, 10, 'OEM ID/name ("NTFS")'],
+      [510, 511, 'Signature (0x55 0xAA)']
+    ]);
     bootsect.setAttribute('info', bootinfo);
+    document.getElementById('hex-container').appendChild(bootsect);
+  </script>
 
-  // append the hex-viewer element to the body
-  document.body.appendChild(bootsect);
-</script>
-</div>
+  <div class="container my-4">
+    <h2>Example: Using HTML Custom Tag</h2>
+    <hex-viewer hex="FF D8 FF E0 ..." info='[[0,1,"JPEG Header"],[2,3,"APP0 Marker"]]'></hex-viewer>
 
+    <h2 class="mt-4">Example: Markdown Attribute</h2>
+    <hex-viewer 
+    hex="FF D8 FF E0 00 10 4A 46 49 46 00 01 01 01"
+    info='[
+      [0, 1, "# Start of Image"],
+      [2, 3, "## APP0 Marker\n- This identifier defines the **JFIF format**.\n- Expected value: `0xFFE0`."]
+    ]'>
+  </hex-viewer>
+    </div>
 
-
-
-
-
-
-
-
-<p>... or by using the html custom tag directly.</p>
-  <hex-viewer
-    hex="FF D8 FF E0 00 10 4A 46 49 46 00 01 01 01 00 00 90 00 00 FF E1 22 45 78 69 66 00 00 4D 4D 00 2A 00 00 00 08 00 01 12 00 03 00 00 00 01 00 01 00 00 00 00 00 00 FF DB 00 43 00 02 01 01 02 01 01 "
-    info='[[0, 1, "<ul><li>Length: 2 bytes</li></ul> <br>JPG images always start with the byte sequence 0xFFD8 at the start of image. <br> You can see that the first four bytes have the value 0xFFD8FFE0, which represents the APP0 marker. An APP1 marker would be 0xFFD8FFE1."],[2, 3, "<ul><li>Length: 2 bytes</li></ul> <br>Application UseMarker(APP0 Marker). This is the identifier. This zero-terminatedstring (0xJFIF) uniquely identifies this APP0 marker. This string shall have zero parity (bit 7=0)."],[4, 5, "<ul><li>Length: 2 bytes</li></ul> <br>Length of APP0 Field"],[6, 9, "<ul><li>Length: 5 bytes, but may vary</li></ul> <br>JFIF(zero terminated) Id string."],[10, 11, "<ul><li>Length: 2 bytes</li></ul> <br>JFIF FormatRevision. In other words, this is the version. The major versionequals the most significant byte and the minor version equals theleast significant byte. Which means that 0x0001 is version number1.00."]]'></hex-viewer>
   <script src="hexviewer.js"></script>
-  <!-- Add JavaScript links here -->
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

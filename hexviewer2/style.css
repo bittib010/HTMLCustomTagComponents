@@ -1,0 +1,166 @@
+/* Base container styles */
+:host {
+    display: block;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    line-height: 1.5;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  
+  /* Control panel styles */
+  .controls {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--text-color);
+  }
+  
+  .controls select {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .controls select:hover {
+    opacity: 0.8;
+  }
+  
+  /* Table layout styles */
+  .tables {
+    display: grid;
+    grid-template-columns: minmax(200px, auto) minmax(300px, auto);
+    gap: 2rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+  }
+  
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    table-layout: fixed;
+    width: 100%;
+  }
+  
+  /* Cell styles */
+  td {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(var(--text-color-rgb), 0.2);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 2rem;
+  }
+  
+  /* Sequence highlighting */
+  td.sequence {
+    background: rgba(var(--text-color-rgb), 0.1);
+    position: relative;
+  }
+  
+  td.sequence::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(var(--text-color-rgb), 0.3);
+    pointer-events: none;
+  }
+  
+  /* Hover effects */
+  td:hover {
+    opacity: 0.7;
+    background: rgba(var(--text-color-rgb), 0.15);
+  }
+  
+  tr:hover td {
+    background: rgba(var(--text-color-rgb), 0.05);
+  }
+  
+  /* Info panel styles */
+  .info-panel {
+    padding: 1rem;
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid rgba(var(--text-color-rgb), 0.2);
+    border-radius: 4px;
+    min-height: 100px;
+    margin-top: 1rem;
+  }
+  
+  .info-panel :is(h1, h2, h3) {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1em;
+  }
+  
+  .info-panel b {
+    color: rgba(var(--text-color-rgb), 0.8);
+  }
+  
+  /* Theme-specific RGB values for opacity calculations */
+  [data-theme="black-white"] {
+    --text-color-rgb: 255, 255, 255;
+  }
+  
+  [data-theme="black-green"] {
+    --text-color-rgb: 0, 255, 0;
+  }
+  
+  [data-theme="black-red"] {
+    --text-color-rgb: 255, 0, 0;
+  }
+  
+  [data-theme="white-green"] {
+    --text-color-rgb: 0, 170, 0;
+  }
+  
+  [data-theme="white-black"] {
+    --text-color-rgb: 0, 0, 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .tables {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  
+    td {
+      padding: 0.15rem 0.3rem;
+      font-size: 0.8rem;
+    }
+  
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--bg-color);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(var(--text-color-rgb), 0.3);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--text-color-rgb), 0.5);
+  }
+  
