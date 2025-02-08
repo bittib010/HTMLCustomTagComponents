@@ -113,8 +113,8 @@ class AsciiHexElement extends HTMLElement {
       table1 += "</tr>";
       table2 += "</tr>";
     }
-    table1 = `<table ">${table1}</table>`;
-    table2 = `<table ">${table2}</table>`;
+    table1 = `<table class="table table-bordered">${table1}</table>`;
+    table2 = `<table class="table table-bordered">${table2}</table>`;
 
     const div_col1 = `<div class="col-1">${table1}</div>`;
     const div_col2 = `<div class="col-2">${table2}</div>`;
