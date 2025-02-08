@@ -1,183 +1,105 @@
-class AsciiHexElement extends HTMLElement {
+if (typeof marked === "undefined") {
+  const script = document.createElement("script");
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js";
+  script.onload = () => this.render();
+  document.head.appendChild(script);
+}
+
+class HexViewer extends HTMLElement {
   constructor() {
     super();
-    
-    this.hexNums = this.getAttribute('hex');
-    this.indexInfo = JSON.parse(this.getAttribute('info'));
+    this.hexData = (this.getAttribute("hex") || "").split(" ");
+    this.indexInfo = JSON.parse(this.getAttribute("info") || "[]");
+    this.lineWidth = parseInt(this.getAttribute("width") || 16, 10);
+    this.attachShadow({ mode: "open" });
 
-    this.lineshift = 16;
-    this.ASCIIHex = this.hexNums;
-    this.current_html = '';
-    this.rrbga = "#fff";
-  }
-  connectedCallback() {
-    if (this.hasAttribute('markdown')) {
-      this.renderMarkdownToHtml();
+    if (typeof marked === "undefined") {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.10/marked.min.js";
+      script.onload = () => this.render();
+      document.head.appendChild(script);
     }
-    this.innerHTML = this.render();
-    this.attachListeners();
-    this.row_col_listener();
-    this.changeOffsetListener();
-    this.changeWidthListener();
   }
 
-  attachListeners() {
-    this.addEventListener('click', (event) => {
-      const cell = event.target.closest('td');
+  connectedCallback() {
+    this.render();
+    this.addListeners();
+  }
+
+  addListeners() {
+    this.shadowRoot.addEventListener("click", (event) => {
+      const cell = event.target.closest("td");
       if (cell) {
-        const index = parseInt(cell.id);
-        this.showInfo(index, this.indexInfo);
+        const index = parseInt(cell.dataset.index, 10);
+        this.showInfo(index);
       }
     });
   }
 
-  changeOffsetListener() {
-    this.addEventListener('click', (event) => {
-      const cell = event.target.closest('td');
-      if (cell) {
-        const index = parseInt(cell.id);
-        const offset = this.querySelector('.offset');
-        if (offset) {
-          offset.innerHTML = "Offset: " + index;
-        }
-      }
-    });
-  }
+  showInfo(index) {
+    const infoFrame = this.shadowRoot.querySelector(".info-frame");
+    const entry = this.indexInfo.find(([start, end]) => index >= start && index <= end);
+    const content = entry ? entry[2] : "No additional info";
 
-  row_col_listener() {
-    const tables = document.querySelectorAll('table');
-    tables.forEach(table => {
-      const cells = table.getElementsByTagName('td');
-      for (let i = 0; i < cells.length; i++) {
-        cells[i].addEventListener('mouseover', function () {
-          const currentRow = this.parentNode.rowIndex;
-          const currentCol = this.cellIndex;
-
-          for (let j = 0; j < table.rows.length; j++) {
-            table.rows[j].cells[currentCol].style.opacity = '0.7';
-          }
-          for (let k = 0; k < this.parentNode.cells.length; k++) {
-            this.parentNode.cells[k].style.opacity = '0.7';
-          }
-        });
-
-        cells[i].addEventListener('mouseout', function () {
-          for (let j = 0; j < cells.length; j++) {
-            cells[j].style.opacity = '1';
-          }
-        });
-      }
-    });
-  }
-
-  changeWidthListener() {
-    const widthInput = this.querySelector('#hex-width');
-    if (widthInput) {
-      widthInput.addEventListener('input', (event) => {
-        const newWidth = parseInt(event.target.value);
-        if (!isNaN(newWidth) && newWidth > 0) {
-          this.lineshift = newWidth;
-          this.innerHTML = this.render();
-          this.attachListeners();
-          this.row_col_listener();
-          this.changeOffsetListener();
-          this.changeWidthListener();
-        }
-      });
+    if (typeof marked !== "undefined") {
+      infoFrame.innerHTML = marked.parse(content); 
+    } else {
+      infoFrame.textContent = content;
     }
   }
 
   render() {
-    this.hexNums = this.hexNums.split(" ");
-    this.ASCIIHex = this.ASCIIHex.split(" ");
+    let hexTable = '<table class="hex-table">';
+    let asciiTable = '<table class="ascii-table">';
+    let colors = {};
 
-    let table1 = '';
-    let table2 = '';
-    for (let i = 0; i < this.hexNums.length; i += this.lineshift) {
-      table1 += '<tr>';
-      table2 += '<tr>';
-      for (let j = i; j < i + this.lineshift; j++) {
-        if (this.hexNums[j] == null || this.hexNums[j] == "") {
-          this.hexNums[j] = "";
-        }
-
-        let foundSeq = false;
-        for (let t = 0; t < this.indexInfo.length; t++) {
-          if (this.indexInfo[t][0] === j) {
-            this.rrbga = this.random_rgba();
-            foundSeq = true;
-            break;
-          } else if (j >= this.indexInfo[t][0] && j <= this.indexInfo[t][1]) {
-            foundSeq = true;
-            break;
-          }
-        }
-
-        if (!foundSeq) {
-          this.rrbga = "#fff"; // default color
-        }
-
-        const td_col_1 = document.createElement("td");
-        td_col_1.id = j;
-        td_col_1.textContent = this.hex2a(this.hexNums[j]);
-        td_col_1.style.backgroundColor = this.rrbga;
-
-        const td_col_2 = document.createElement("td");
-        td_col_2.id = j;
-        td_col_2.textContent = this.hexNums[j];
-        td_col_2.style.backgroundColor = this.rrbga;
-
-        table1 += td_col_1.outerHTML;
-        table2 += td_col_2.outerHTML;
+    this.indexInfo.forEach(([start, end]) => {
+      const color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.3)`;
+      for (let i = start; i <= end; i++) {
+        colors[i] = color;
       }
-      table1 += "</tr>";
-      table2 += "</tr>";
-    }
-    table1 = `<table class="table table-bordered">${table1}</table>`;
-    table2 = `<table class="table table-bordered">${table2}</table>`;
+    });
 
-    const div_col1 = `<div class="col-1">${table1}</div>`;
-    const div_col2 = `<div class="col-2">${table2}</div>`;
-    this.current_html = `<div class="outer-wrapper"><div class="upper_opts"><span class="hex-tabs"><span class="offset"></span> </span><span class="hex-tabs"><input type="text" id="hex-width" placeholder="Width"></span></div><div class="hex-wrapper">${div_col1}${div_col2}<div class="info-frame col"></div></div></div>`;
-    return this.current_html;
-  }
-  hex2a(hex) {
-    var str = '';
-    for (var i = 0; i < hex.length; i += 2) {
-      var v = parseInt(hex.substr(i, 2), 16);
-      if (v > 32) { // could add other chars here
-        str += String.fromCharCode(v);
-      } else {
-        str += ".";
+    for (let i = 0; i < this.hexData.length; i += this.lineWidth) {
+      hexTable += "<tr>";
+      asciiTable += "<tr>";
+      for (let j = i; j < i + this.lineWidth; j++) {
+        if (!this.hexData[j]) continue;
+        const bgColor = colors[j] || "#fff";
+        const char = this.hexToAscii(this.hexData[j]);
+        hexTable += `<td data-index="${j}" style="background:${bgColor};">${this.hexData[j]}</td>`;
+        asciiTable += `<td data-index="${j}" style="background:${bgColor};">${char}</td>`;
       }
+      hexTable += "</tr>";
+      asciiTable += "</tr>";
     }
-    return str;
-  }
-  showInfo(index, indexInfo) {
-    for (let i = 0; i < indexInfo.length; i++) {
-      if (index >= indexInfo[i][0] && index <= indexInfo[i][1]) {
-        // Update the content of the `.info-frame` element
-        const infoFrame = this.querySelector('.info-frame');
-        if (infoFrame) {
-          infoFrame.innerHTML = indexInfo[i][2];
+    hexTable += "</table>";
+    asciiTable += "</table>";
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        .hex-table, .ascii-table { border-collapse: collapse; }
+        td { padding: 2px 5px; text-align: center; cursor: pointer; }
+        .info-frame { 
+          margin-top: 10px; 
+          padding: 10px; 
+          border: 1px solid #ccc; 
+          background: #f8f8f8; 
+          font-family: Arial, sans-serif; 
+          white-space: pre-wrap;
         }
-        break;
-      }
-    }
-  }
-  random_rgba() {
-    var o = Math.round, r = Math.random, s = 255;
-    return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + (0.2 + (r() * 0.3)).toFixed(1) + ')';
+      </style>
+      <div>
+        <div style="display: flex; gap: 10px;">${hexTable}${asciiTable}</div>
+        <div class="info-frame">Click on a byte to see details</div>
+      </div>
+    `;
   }
 
-  renderMarkdownToHtml() {
-    const markdown = this.getAttribute('markdown');
-    if (markdown) {
-      const converter = new showdown.Converter();
-      const html = converter.makeHtml(markdown);
-      this.innerHTML = html;
-    }
+  hexToAscii(hex) {
+    const val = parseInt(hex, 16);
+    return val > 31 && val < 127 ? String.fromCharCode(val) : ".";
   }
 }
 
-customElements.define('hex-viewer', AsciiHexElement);
+customElements.define("hex-viewer", HexViewer);
