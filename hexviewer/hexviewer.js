@@ -11,6 +11,9 @@ class AsciiHexElement extends HTMLElement {
     this.rrbga = "#fff";
   }
   connectedCallback() {
+    if (this.hasAttribute('markdown')) {
+      this.renderMarkdownToHtml();
+    }
     this.innerHTML = this.render();
     this.attachListeners();
     this.row_col_listener();
@@ -167,6 +170,14 @@ class AsciiHexElement extends HTMLElement {
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + (0.2 + (r() * 0.3)).toFixed(1) + ')';
   }
 
+  renderMarkdownToHtml() {
+    const markdown = this.getAttribute('markdown');
+    if (markdown) {
+      const converter = new showdown.Converter();
+      const html = converter.makeHtml(markdown);
+      this.innerHTML = html;
+    }
+  }
 }
 
 customElements.define('hex-viewer', AsciiHexElement);
