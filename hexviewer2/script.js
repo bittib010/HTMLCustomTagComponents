@@ -289,6 +289,42 @@ class HexViewer extends HTMLElement {
           height: 100%;
         }
   
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+  
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+  
+        ::-webkit-scrollbar-thumb {
+          background: rgba(var(--text-color-rgb), 0.2);
+          border-radius: 3px;
+          transition: background-color 0.2s ease;
+        }
+  
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(var(--text-color-rgb), 0.3);
+        }
+  
+        ::-webkit-scrollbar-corner {
+          background: transparent;
+        }
+  
+        /* Apply scrollbar styles to specific scrollable elements */
+        .tables-wrapper, .info-panel, .modal-content {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(var(--text-color-rgb), 0.2) transparent;
+        }
+  
+        .tables-wrapper:hover::-webkit-scrollbar-thumb,
+        .info-panel:hover::-webkit-scrollbar-thumb,
+        .modal-content:hover::-webkit-scrollbar-thumb {
+          background: rgba(var(--text-color-rgb), 0.3);
+        }
+  
         .outer-wrapper {
           max-width: 100%;
           height: calc(100vh - 6rem);
@@ -395,10 +431,11 @@ class HexViewer extends HTMLElement {
         }
   
         .expand-btn {
-          position: absolute;
+          position: sticky;
+          float: right;
           right: 0.2rem;
           bottom: 0.2rem;
-          background: rgba(var(--text-color-rgb), 0.1);
+          background: var(--bg-color);
           color: var(--text-color);
           border: 1px solid var(--text-color);
           padding: 0.1rem 0.3rem;
@@ -406,6 +443,7 @@ class HexViewer extends HTMLElement {
           cursor: pointer;
           font-size: 0.7rem;
           transition: background-color 0.2s ease;
+          margin-left: 1rem;
         }
   
         .expand-btn:hover {
@@ -438,28 +476,32 @@ class HexViewer extends HTMLElement {
         }
   
         .close-btn {
-          position: absolute;
-          top: 0.5rem;
-          right: 0.5rem;
-          background: none;
-          border: none;
+          position: sticky;
+          top: -0.5rem;
+          float: right;
+          background: var(--bg-color);
+          border: 1px solid var(--text-color);
           color: var(--text-color);
-          font-size: 1.5rem;
+          font-size: 1.2rem;
           cursor: pointer;
           padding: 0;
-          width: 2rem;
-          height: 2rem;
+          width: 1.5rem;
+          height: 1.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
+          border-radius: 4px;
+          margin-bottom: 0.5rem;
+          margin-left: 0.5rem;
         }
   
         .close-btn:hover {
-          opacity: 0.7;
+          background: rgba(var(--text-color-rgb), 0.2);
         }
   
         .modal-body {
           margin-top: 1rem;
+          clear: both;
         }
   
         @media (max-width: 768px) {
