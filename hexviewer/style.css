@@ -7,6 +7,9 @@
   border: 2px solid #ccc;
   border-radius: 15px;
   background-color: #ddd;
+  /* Use Bootstrap grid system */
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .outer-wrapper {
@@ -51,6 +54,8 @@ div.info-frame {
   white-space: pre-wrap;
   word-wrap: break-word;
   border: 2px solid #ccc;
+  /* Make the information area auto-stretch to fit content more easily */
+  flex: 1;
 }
 
 .hex-tabs {
@@ -82,4 +87,10 @@ input[type="text"]:focus {
   padding: 12px;
   color: yellow;
   display: inline-block;
+}
+
+/* Set a maximum of 5px padding/margin between the ASCII and hex view */
+.hex-wrapper > div {
+  padding: 5px;
+  margin: 5px;
 }
