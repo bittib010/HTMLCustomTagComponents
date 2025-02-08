@@ -1,6 +1,6 @@
 .hex-wrapper {
   display: grid;
-  grid-template-columns: 9rem 16rem auto;
+  grid-template-columns: 1fr 1fr 1fr;
   overflow: auto;
   font-size: 10px;
   font-family: "Courier New", Courier, monospace;
@@ -13,12 +13,20 @@
   margin: 1rem;
   display: flex;
   flex-direction: column;
+  /* Add Bootstrap classes */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .upper_opts {
   margin-left: 1rem;
   display: flex;
   justify-content: space-between;
+  /* Add Bootstrap classes */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 hex-viewer>td {
