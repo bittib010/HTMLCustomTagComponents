@@ -156,7 +156,7 @@ class AsciiHexElement extends HTMLElement {
         // Update the content of the `.info-frame` element
         const infoFrame = this.querySelector('.info-frame');
         if (infoFrame) {
-          infoFrame.innerHTML = indexInfo[i][2];
+          infoFrame.innerHTML = this.renderMarkdown(indexInfo[i][2]);
         }
         break;
       }
@@ -167,6 +167,9 @@ class AsciiHexElement extends HTMLElement {
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + (0.2 + (r() * 0.3)).toFixed(1) + ')';
   }
 
+  renderMarkdown(markdown) {
+    return marked(markdown);
+  }
 }
 
 customElements.define('hex-viewer', AsciiHexElement);

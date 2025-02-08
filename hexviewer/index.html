@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Custom elements</title>
   <!-- Add CSS links here -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -101,8 +101,9 @@
 <p>... or by using the html custom tag directly.</p>
   <hex-viewer
     hex="FF D8 FF E0 00 10 4A 46 49 46 00 01 01 01 00 00 90 00 00 FF E1 22 45 78 69 66 00 00 4D 4D 00 2A 00 00 00 08 00 01 12 00 03 00 00 00 01 00 01 00 00 00 00 00 00 FF DB 00 43 00 02 01 01 02 01 01 "
-    info='[[0, 1, "<ul><li>Length: 2 bytes</li></ul> <br>JPG images always start with the byte sequence 0xFFD8 at the start of image. <br> You can see that the first four bytes have the value 0xFFD8FFE0, which represents the APP0 marker. An APP1 marker would be 0xFFD8FFE1."],[2, 3, "<ul><li>Length: 2 bytes</li></ul> <br>Application UseMarker(APP0 Marker). This is the identifier. This zero-terminatedstring (0xJFIF) uniquely identifies this APP0 marker. This string shall have zero parity (bit 7=0)."],[4, 5, "<ul><li>Length: 2 bytes</li></ul> <br>Length of APP0 Field"],[6, 9, "<ul><li>Length: 5 bytes, but may vary</li></ul> <br>JFIF(zero terminated) Id string."],[10, 11, "<ul><li>Length: 2 bytes</li></ul> <br>JFIF FormatRevision. In other words, this is the version. The major versionequals the most significant byte and the minor version equals theleast significant byte. Which means that 0x0001 is version number1.00."]]'></hex-viewer>
+    info='[[0, 1, "# Length: 2 bytes\n\nJPG images always start with the byte sequence 0xFFD8 at the start of image. \n\nYou can see that the first four bytes have the value 0xFFD8FFE0, which represents the APP0 marker. An APP1 marker would be 0xFFD8FFE1."],[2, 3, "# Length: 2 bytes\n\nApplication UseMarker(APP0 Marker). This is the identifier. This zero-terminatedstring (0xJFIF) uniquely identifies this APP0 marker. This string shall have zero parity (bit 7=0)."],[4, 5, "# Length: 2 bytes\n\nLength of APP0 Field"],[6, 9, "# Length: 5 bytes, but may vary\n\nJFIF(zero terminated) Id string."],[10, 11, "# Length: 2 bytes\n\nJFIF FormatRevision. In other words, this is the version. The major versionequals the most significant byte and the minor version equals theleast significant byte. Which means that 0x0001 is version number1.00."]]'></hex-viewer>
   <script src="hexviewer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <!-- Add JavaScript links here -->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
