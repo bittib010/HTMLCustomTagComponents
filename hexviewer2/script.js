@@ -18,12 +18,14 @@ class HexViewer extends HTMLElement {
       this.usedColors = [];
       this.sequenceColors = new Map();
       this.currentInfoText = '';
+      this.currentOffset = 0;
   
       // Bind methods
       this.handleClick = this.handleClick.bind(this);
       this.handleWidthChange = this.handleWidthChange.bind(this);
       this.handleThemeChange = this.handleThemeChange.bind(this);
       this.handleModalClose = this.handleModalClose.bind(this);
+      this.handleCellHover = this.handleCellHover.bind(this);
     }
   
     static get observedAttributes() {
@@ -167,7 +169,17 @@ class HexViewer extends HTMLElement {
       this.render();
       this.setupEventListeners();
     }
-  
+    handleCellHover(e) {
+      const cell = e.target.closest('td');
+      if (cell) {
+        const offset = parseInt(cell.getAttribute('data-index') || '0');
+        this.currentOffset = offset;
+        const offsetDisplay = this.shadowRoot?.querySelector('#offset-display');
+        if (offsetDisplay) {
+          offsetDisplay.textContent = `Offset: ${offset.toString(16).toUpperCase().padStart(2, '0')}`;
+        }
+      }
+    }
     removeEventListeners() {
       if (!this.shadowRoot) return;
   
@@ -175,6 +187,7 @@ class HexViewer extends HTMLElement {
       const themeSelect = this.shadowRoot.querySelector('#theme-select');
   
       this.shadowRoot.removeEventListener('click', this.handleClick);
+      this.shadowRoot.removeEventListener('mousemove', this.handleCellHover);
       widthSelect?.removeEventListener('change', this.handleWidthChange);
       themeSelect?.removeEventListener('change', this.handleThemeChange);
     }
@@ -185,6 +198,7 @@ class HexViewer extends HTMLElement {
       this.removeEventListeners();
   
       this.shadowRoot.addEventListener('click', this.handleClick);
+      this.shadowRoot.addEventListener('mousemove', this.handleCellHover);
   
       const widthSelect = this.shadowRoot.querySelector('#width-select');
       const themeSelect = this.shadowRoot.querySelector('#theme-select');
@@ -365,6 +379,17 @@ class HexViewer extends HTMLElement {
           font-size: 0.8rem;
         }
   
+        #offset-display {
+          margin-left: auto;
+          padding: 0.15rem 0.5rem;
+          background: var(--bg-color);
+          color: var(--text-color);
+          border: 1px solid var(--text-color);
+          border-radius: 4px;
+          font-family: inherit;
+          font-size: 0.8rem;
+        }
+  
         .tables {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -534,6 +559,7 @@ class HexViewer extends HTMLElement {
                 </option>`
               ).join('')}
             </select>
+            <div id="offset-display">Offset: 00</div>
           </div>
           <div class="tables-wrapper">
             <div class="tables">
