@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hex Viewer</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 1rem;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      select {
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .description {
+        color: #666;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <select id="fileSelect"></select>
+      <h1 id="fileName"></h1>
+      <p id="fileDescription" class="description"></p>
+      <hex-viewer id="hexViewer" width="16" theme="black-white"></hex-viewer>
+    </div>
+
+    <script src="./script.js"></script>
+    <script>
+      // Load and initialize the hex viewer with the mock data
+      async function initHexViewer() {
+        try {
+          const response = await fetch('./mock-files.json');
+          const data = await response.json();
+          const files = data.files;
+
+          const fileSelect = document.getElementById('fileSelect');
+          const fileName = document.getElementById('fileName');
+          const fileDescription = document.getElementById('fileDescription');
+          const hexViewer = document.getElementById('hexViewer');
+
+          // Populate the file select dropdown
+          files.forEach(file => {
+            const option = document.createElement('option');
+            option.value = file.id;
+            option.textContent = file.name;
+            fileSelect.appendChild(option);
+          });
+
+          // Function to update the viewer with selected file
+          function updateViewer(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (file) {
+              fileName.textContent = file.name;
+              fileDescription.textContent = file.description;
+              hexViewer.setAttribute('hex', file.hexData);
+              hexViewer.setAttribute('sequences', JSON.stringify(file.sequences));
+            }
+          }
+
+          // Set initial file
+          updateViewer(files[0].id);
+
+          // Handle file selection changes
+          fileSelect.addEventListener('change', (e) => {
+            updateViewer(e.target.value);
+          });
+
+        } catch (error) {
+          console.error('Error loading hex viewer data:', error);
+        }
+      }
+
+      // Initialize when the page loads
+      document.addEventListener('DOMContentLoaded', initHexViewer);
+    </script>
+  </body>
+</html>
