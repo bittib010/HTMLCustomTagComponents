@@ -10,62 +10,14 @@
         [
           0,
           2,
-          "Jump instructions (short jump, offset, NOP: 0xEB 0x52 0x90)<br><b>Type: </b>LONGLONG",
-          "undefined"
+          "Jump instructions (short jump, offset, NOP: 0xEB 0x52 0x90)<br><b>Type: </b>LONGLONG"
         ],
-        [3, 10, "OEM ID/name (\"NTFS\")", "undefined"],
+        [3, 10, "OEM ID/name (\"NTFS\")"],
         [
           11,
           12,
-          "<h1>Bios Parameter Block</h1>The data fields succeeding the BPB on NTFS volumes constitute an extended BPB. This additional information assists the Ntldr (NT loader program) in locating the master file table (MFT) during system startup. Unlike on FAT16 and FAT32 volumes, the MFT is not fixed to a specific sector on NTFS volumes. Consequently, if there is a defective sector in its usual position, the MFT can be relocated. Nevertheless, if the data becomes corrupted, Windows will be unable to locate the MFT, causing it to assume that the volume has not undergone formatting. The BPB block is 25 bytes long, ends when bootstrap code begins.<br>This sequence means bytes per sector (512 = 0x0200).",
-          "undefined"
-        ],
-        [13, 13, "Sectors per cluster (0x08)", "undefined"],
-        [14, 15, "Reserved sectors", "undefined"],
-        [16, 18, "Are always set to 0.", "undefined"],
-        [19, 20, "Not in use by NTFS", "undefined"],
-        [
-          21,
-          21,
-          "Media descriptor (0xF8). This will most often be 0xF8 which means Harddisk.",
-          "undefined"
-        ],
-        [22, 23, "Must be zeros.", "undefined"],
-        [24, 25, "Sectors per track.", "undefined"],
-        [26, 27, "Number of heads (probably 0xFF).", "undefined"],
-        [28, 31, "Hidden sectors (sectors before the partition)", "undefined"],
-        [32, 35, "Must be zeros", "undefined"],
-        [
-          36,
-          39,
-          "Signature (0x80 0x00 0x80 0x00). This value indicates an NTFS filesystem.",
-          "undefined"
-        ],
-        [40, 49, "Total sectors in volume.", "undefined"],
-        [
-          50,
-          57,
-          "$MFT cluster number.<br>Starting logical cluster number for MFT",
-          "undefined"
-        ],
-        [
-          58,
-          65,
-          "$MFTMirr cluster number.<br>Starting logical cluster number for MFT mirror.",
-          "undefined"
-        ],
-        [
-          66,
-          69,
-          "Clusters per file record segment (see text for interpretation).",
-          "undefined"
-        ],
-        [70, 70, "Clusters per index buffer/index block (1)", "undefined"],
-        [71, 73, "Must be zeros (Not in use by NTFS).", "undefined"],
-        [74, 81, "Volume serial number.", "undefined"],
-        [82, 85, "Currently unused checksum value.", "undefined"],
-        [86, 509, "Bootstrap code.", "undefined"],
-        [510, 511, "Signature (0x55 0xAA).", "undefined"]
+          "<h1>Bios Parameter Block</h1>The data fields succeeding the BPB on NTFS volumes constitute an extended BPB. This additional information assists the Ntldr (NT loader program) in locating the master file table (MFT) during system startup. Unlike on FAT16 and FAT32 volumes, the MFT is not fixed to a specific sector on NTFS volumes. Consequently, if there is a defective sector in its usual position, the MFT can be relocated. Nevertheless, if the data becomes corrupted, Windows will be unable to locate the MFT, causing it to assume that the volume has not undergone formatting. The BPB block is 25 bytes long, ends when bootstrap code begins.<br>This sequence means bytes per sector (512 = 0x0200)."
+        ]
       ]
     },
     {
@@ -75,31 +27,18 @@
       "type": "executable",
       "hexData": "4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 00 00 00 0E 1F BA 0E 00 B4 09 CD 21 B8 01 4C CD 21 54 68 69 73 20 70 72 6F 67 72 61 6D 20 63 61 6E 6E 6F 74 20 62 65 20 72 75 6E 20 69 6E 20 44 4F 53 20 6D 6F 64 65 2E 0D 0D 0A 24 00 00 00 00 00 00 00",
       "sequences": [
-        [
-          0,
-          1,
-          "MZ Header signature (\"MZ\")<br><b>Type: </b>ASCII",
-          "undefined"
-        ],
-        [2, 3, "Bytes on last page of file", "undefined"],
-        [4, 5, "Pages in file", "undefined"],
-        [6, 7, "Relocations", "undefined"],
-        [8, 9, "Size of header in paragraphs", "undefined"],
-        [10, 11, "Minimum extra paragraphs needed", "undefined"],
-        [12, 13, "Maximum extra paragraphs needed", "undefined"],
-        [14, 15, "Initial (relative) SS value", "undefined"],
-        [16, 17, "Initial SP value", "undefined"],
-        [18, 19, "Checksum", "undefined"],
-        [20, 21, "Initial IP value", "undefined"],
-        [22, 23, "Initial (relative) CS value", "undefined"],
-        [24, 25, "File address of relocation table", "undefined"],
-        [26, 27, "Overlay number", "undefined"],
-        [28, 35, "Reserved words", "undefined"],
-        [36, 37, "OEM identifier", "undefined"],
-        [38, 39, "OEM information", "undefined"],
-        [40, 57, "Reserved words", "undefined"],
-        [58, 59, "PE header offset", "undefined"]
+        [0, 1, "MZ Header signature (\"MZ\")<br><b>Type: </b>ASCII"],
+        [2, 3, "Bytes on last page of file"],
+        [4, 5, "Pages in file"]
       ]
+    },
+    {
+      "id": "empty-test",
+      "name": "Test File (No Sequences)",
+      "description": "A test file for adding new sequences from scratch",
+      "type": "test",
+      "hexData": "48 65 6C 6C 6F 20 57 6F 72 6C 64 21 20 54 68 69 73 20 69 73 20 61 20 74 65 73 74 20 66 69 6C 65",
+      "sequences": []
     }
   ]
 }

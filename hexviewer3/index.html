@@ -40,12 +40,12 @@
       <hex-viewer id="hexViewer" width="16" theme="black-white"></hex-viewer>
     </div>
 
-    <script src="./script.js"></script>
+    <script src="/script.js"></script>
     <script>
       // Load and initialize the hex viewer with the mock data
       async function initHexViewer() {
         try {
-          const response = await fetch('./mock-files.json');
+          const response = await fetch('/mock-files.json');
           const data = await response.json();
           const files = data.files;
 

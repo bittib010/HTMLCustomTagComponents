@@ -1,4 +1,69 @@
 class HexViewer extends HTMLElement {
+  handleClick(e) {
+    const cell = e.target.closest('td');
+    if (cell) {
+      const index = parseInt(cell.getAttribute('data-index') || '0');
+      this.showSequenceInfo(index);
+    }
+  }
+
+  handleWidthChange(e) {
+    const width = parseInt(e.target.value);
+    if (!isNaN(width)) {
+      this.lineWidth = width;
+      this.render();
+      this.setupEventListeners();
+    }
+  }
+
+  handleThemeChange(e) {
+    const theme = e.target.value;
+    this.currentTheme = theme;
+    this.generateSequenceColors();
+    this.render();
+    this.setupEventListeners();
+  }
+
+  handleModalClose(e) {
+    if (e.target) {
+      const modal = this.shadowRoot?.querySelector('.modal');
+      modal?.remove();
+    }
+  }
+
+  handleCellHover(e) {
+    const cell = e.target.closest('td');
+    if (cell) {
+      const offset = parseInt(cell.getAttribute('data-index') || '0');
+      this.currentOffset = offset;
+      const offsetDisplay = this.shadowRoot?.querySelector('#offset-display');
+      if (offsetDisplay) {
+        offsetDisplay.textContent = `Offset: ${offset.toString(16).toUpperCase().padStart(2, '0')}`;
+      }
+    }
+  }
+
+  handleCellClick(e) {
+    const cell = e.target.closest('td');
+    if (!cell) return;
+
+    if (!this.selectionMode) {
+      this.handleClick(e);
+      return;
+    }
+
+    const index = parseInt(cell.getAttribute('data-index') || '0');
+
+    if (this.selectionStart === null) {
+      this.selectionStart = index;
+      this.selectionEnd = index;
+    } else {
+      this.selectionEnd = index;
+    }
+
+    this.render(); // Update status display with new values
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -19,13 +84,19 @@ class HexViewer extends HTMLElement {
     this.sequenceColors = new Map();
     this.currentInfoText = '';
     this.currentOffset = 0;
+    this.selectionMode = false;
+    this.selectionStart = null;
+    this.selectionEnd = null;
 
-    // Bind methods
+    // Bind all methods that will be used as event handlers
     this.handleClick = this.handleClick.bind(this);
     this.handleWidthChange = this.handleWidthChange.bind(this);
     this.handleThemeChange = this.handleThemeChange.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
     this.handleCellHover = this.handleCellHover.bind(this);
+    this.handleCellClick = this.handleCellClick.bind(this);
+    this.startSelectionMode = this.startSelectionMode.bind(this);
+    this.handleAddSelectedSequence = this.handleAddSelectedSequence.bind(this);
   }
 
   static get observedAttributes() {
@@ -33,16 +104,37 @@ class HexViewer extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
+    console.log('Attribute changed:', name, 'old:', oldValue, 'new:', newValue);
+
     if (name === 'hex') {
       this.hexData = newValue;
     } else if (name === 'sequences') {
-      this.sequences = JSON.parse(newValue);
-      this.generateSequenceColors();
+      try {
+        const parsedNewValue = JSON.parse(newValue);
+        // Only update if the sequences have actually changed
+        if (JSON.stringify(this.sequences) !== JSON.stringify(parsedNewValue)) {
+          console.log('Sequences updated:', parsedNewValue);
+          this.sequences = [...parsedNewValue]; // Create a new array to ensure state update
+          this.generateSequenceColors();
+
+          // Dispatch event to notify parent component
+          const event = new CustomEvent('sequenceupdate', {
+            detail: this.sequences,
+            bubbles: true,
+            composed: true
+          });
+          this.dispatchEvent(event);
+        }
+      } catch (error) {
+        console.error('Error parsing sequences:', error);
+      }
     } else if (name === 'width') {
       this.lineWidth = parseInt(newValue) || 16;
     } else if (name === 'theme') {
       this.currentTheme = newValue;
     }
+
+    // Always re-render and setup listeners after attribute changes
     this.render();
     this.setupEventListeners();
   }
@@ -145,66 +237,88 @@ class HexViewer extends HTMLElement {
     return this.sequenceColors.get(sequence[0]) || 'transparent';
   }
 
-  handleClick(e) {
-    const cell = e.target.closest('td');
-    if (cell) {
-      const index = parseInt(cell.getAttribute('data-index') || '0');
-      this.showSequenceInfo(index);
-    }
-  }
-
-  handleWidthChange(e) {
-    const width = parseInt(e.target.value);
-    if (!isNaN(width)) {
-      this.lineWidth = width;
-      this.render();
-      this.setupEventListeners();
-    }
-  }
-
-  handleThemeChange(e) {
-    const theme = e.target.value;
-    this.currentTheme = theme;
-    this.generateSequenceColors();
-    this.render();
-    this.setupEventListeners();
-  }
-  handleCellHover(e) {
-    const cell = e.target.closest('td');
-    if (cell) {
-      const offset = parseInt(cell.getAttribute('data-index') || '0');
-      this.currentOffset = offset;
-      const offsetDisplay = this.shadowRoot?.querySelector('#offset-display');
-      if (offsetDisplay) {
-        offsetDisplay.textContent = `Offset: ${offset.toString(16).toUpperCase().padStart(2, '0')}`;
-      }
-    }
-  }
   removeEventListeners() {
     if (!this.shadowRoot) return;
 
     const widthSelect = this.shadowRoot.querySelector('#width-select');
     const themeSelect = this.shadowRoot.querySelector('#theme-select');
+    const addSequenceBtn = this.shadowRoot.querySelector('.add-sequence-btn');
+    const startInput = this.shadowRoot.querySelector('.start-index');
+    const endInput = this.shadowRoot.querySelector('.end-index');
+    const addSelectedBtn = this.shadowRoot.querySelector('.add-selected-btn');
 
     this.shadowRoot.removeEventListener('click', this.handleClick);
     this.shadowRoot.removeEventListener('mousemove', this.handleCellHover);
     widthSelect?.removeEventListener('change', this.handleWidthChange);
     themeSelect?.removeEventListener('change', this.handleThemeChange);
+    addSequenceBtn?.removeEventListener('click', this.startSelectionMode);
+    startInput?.removeEventListener('change', this.handleStartIndexChange);
+    endInput?.removeEventListener('change', this.handleEndIndexChange);
+    addSelectedBtn?.removeEventListener('click', this.handleAddSelectedSequence);
   }
 
   setupEventListeners() {
-    if (!this.shadowRoot) return;
+    if (!this.shadowRoot) {
+      console.error('No shadowRoot found in setupEventListeners');
+      return;
+    }
 
-    this.removeEventListeners();
+    try {
+      this.removeEventListeners();
 
-    this.shadowRoot.addEventListener('click', this.handleClick);
-    this.shadowRoot.addEventListener('mousemove', this.handleCellHover);
+      // Use handleCellClick for cell interactions
+      this.shadowRoot.addEventListener('click', this.handleCellClick);
+      this.shadowRoot.addEventListener('mousemove', this.handleCellHover);
 
-    const widthSelect = this.shadowRoot.querySelector('#width-select');
-    const themeSelect = this.shadowRoot.querySelector('#theme-select');
+      const widthSelect = this.shadowRoot.querySelector('#width-select');
+      const themeSelect = this.shadowRoot.querySelector('#theme-select');
+      const addSequenceBtn = this.shadowRoot.querySelector('.add-sequence-btn');
+      const addSelectedBtn = this.shadowRoot.querySelector('.add-selected-btn');
 
-    widthSelect?.addEventListener('change', this.handleWidthChange);
-    themeSelect?.addEventListener('change', this.handleThemeChange);
+      // Add listeners for index inputs
+      if (this.selectionMode) {
+        const startInput = this.shadowRoot.querySelector('.start-index');
+        const endInput = this.shadowRoot.querySelector('.end-index');
+
+        if (startInput) {
+          startInput.addEventListener('change', (e) => {
+            this.selectionStart = parseInt(e.target.value);
+            this.render();
+          });
+        }
+
+        if (endInput) {
+          endInput.addEventListener('change', (e) => {
+            this.selectionEnd = parseInt(e.target.value);
+            this.render();
+          });
+        }
+      }
+
+      // Bind all the buttons
+      widthSelect?.addEventListener('change', this.handleWidthChange);
+      themeSelect?.addEventListener('change', this.handleThemeChange);
+      addSequenceBtn?.addEventListener('click', this.startSelectionMode);
+
+      if (addSelectedBtn) {
+        addSelectedBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.handleAddSelectedSequence();
+        });
+      }
+    } catch (error) {
+      console.error('Error in setupEventListeners:', error);
+      console.error('Component state:', {
+        selectionMode: this.selectionMode,
+        hasElements: {
+          widthSelect: !!this.shadowRoot.querySelector('#width-select'),
+          themeSelect: !!this.shadowRoot.querySelector('#theme-select'),
+          addSequenceBtn: !!this.shadowRoot.querySelector('.add-sequence-btn'),
+          addSelectedBtn: !!this.shadowRoot.querySelector('.add-selected-btn')
+        }
+      });
+    }
   }
 
   connectedCallback() {
@@ -227,13 +341,234 @@ class HexViewer extends HTMLElement {
       if (infoPanel) {
         infoPanel.innerHTML = `
           ${sequence[2]}
-          <button class="expand-btn">View Full Details</button>
+          <div class="info-panel-buttons">
+            <button class="expand-btn">View Full Details</button>
+            <button class="edit-btn">Edit Sequence</button>
+          </div>
         `;
 
         const expandBtn = infoPanel.querySelector('.expand-btn');
         expandBtn?.addEventListener('click', () => this.showModal(sequence[2]));
+
+        const editBtn = infoPanel.querySelector('.edit-btn');
+        editBtn?.addEventListener('click', () => this.showEditModal(sequence));
       }
     }
+  }
+
+  showEditModal(sequence) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    // For new sequences in selection mode, prepare the indices
+    const startIndex = sequence ? sequence[0] :
+      (this.selectionMode ? Math.min(this.selectionStart, this.selectionEnd) : '');
+    const endIndex = sequence ? sequence[1] :
+      (this.selectionMode ? Math.max(this.selectionStart, this.selectionEnd) : '');
+
+    modal.innerHTML = `
+      <div class="modal-content">
+        <button class="close-btn">&times;</button>
+        <h2 class="modal-title">${sequence ? 'Edit Sequence' : 'New Sequence'}</h2>
+        <div class="modal-body">
+          <form id="sequenceForm">
+            <div class="form-group">
+              <label>Start Index:</label>
+              <input type="number" id="startIndex" value="${startIndex}"
+                     ${this.selectionMode ? 'readonly' : ''}>
+            </div>
+            <div class="form-group">
+              <label>End Index:</label>
+              <input type="number" id="endIndex" value="${endIndex}"
+                     ${this.selectionMode ? 'readonly' : ''}>
+            </div>
+            <div class="form-group">
+              <label>Description:</label>
+              <textarea id="description" required>${sequence ? sequence[2] : ''}</textarea>
+            </div>
+            ${sequence[3] ? `
+              <div class="form-group">
+                <label>Custom Color (optional):</label>
+                <input type="color" id="customColor" value="${sequence[3]}">
+              </div>
+            ` : ''}
+            <div class="form-actions">
+              <button type="submit" class="save-btn">Save</button>
+              ${sequence[2] ? '<button type="button" class="delete-btn">Delete</button>' : ''}
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    // Important: Append the modal to shadowRoot before adding event listeners
+    if (this.shadowRoot) {
+      this.shadowRoot.appendChild(modal);
+    } else {
+      console.error('No shadowRoot found');
+      return;
+    }
+
+    // Now get the form and add event listeners
+    const form = modal.querySelector('#sequenceForm');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSequenceFormSubmit(e, sequence);
+      });
+    }
+
+    const deleteBtn = modal.querySelector('.delete-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete this sequence?')) {
+          this.deleteSequence(sequence);
+          this.handleModalClose({ target: modal.querySelector('.close-btn') });
+        }
+      });
+    }
+
+    const closeBtn = modal.querySelector('.close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        this.handleModalClose({ target: e.target });
+        // Reset selection mode if we cancel
+        if (this.selectionMode) {
+          this.selectionMode = false;
+          this.selectionStart = null;
+          this.selectionEnd = null;
+          this.render();
+        }
+      });
+    }
+  }
+
+  deleteSequence(sequence) {
+    const index = this.sequences.findIndex(([start]) => start === sequence[0]);
+    if (index !== -1) {
+      this.sequences.splice(index, 1);
+      this.generateSequenceColors();
+      this.render();
+    }
+  }
+
+  handleSequenceFormSubmit(e, existingSequence) {
+    e.preventDefault();
+    const form = e.target;
+
+    try {
+      console.log('Starting form submission with data:', {
+        existingSequence,
+        selectionMode: this.selectionMode,
+        selectionStart: this.selectionStart,
+        selectionEnd: this.selectionEnd,
+        currentSequences: this.sequences
+      });
+
+      // Get form values
+      const description = form.description.value.trim();
+      console.log('Form description:', description);
+
+      if (!description) {
+        alert('Description is required');
+        return;
+      }
+
+      // Use the existing sequence's start and end indices or form values
+      const startIndex = existingSequence ? existingSequence[0] :
+        this.selectionMode ? Math.min(this.selectionStart, this.selectionEnd) :
+        parseInt(form.startIndex.value);
+      const endIndex = existingSequence ? existingSequence[1] :
+        this.selectionMode ? Math.max(this.selectionStart, this.selectionEnd) :
+        parseInt(form.endIndex.value);
+
+      console.log('Sequence indices:', { startIndex, endIndex });
+
+      // Check for invalid indices
+      if (isNaN(startIndex) || isNaN(endIndex) || startIndex > endIndex) {
+        console.error('Invalid index range:', { startIndex, endIndex });
+        alert('Invalid index range');
+        return;
+      }
+
+      // Create the new sequence array
+      const newSequence = [startIndex, endIndex, description, form.customColor ? form.customColor.value : undefined];
+      console.log('New sequence created:', newSequence);
+
+      // Create a new sequences array with the update
+      let updatedSequences;
+      if (existingSequence) {
+        const index = this.sequences.findIndex(([start]) => start === existingSequence[0]);
+        if (index !== -1) {
+          console.log('Updating existing sequence at index:', index);
+          updatedSequences = [
+            ...this.sequences.slice(0, index),
+            newSequence,
+            ...this.sequences.slice(index + 1)
+          ];
+        } else {
+          updatedSequences = [...this.sequences];
+        }
+      } else {
+        console.log('Adding new sequence');
+        updatedSequences = [...this.sequences, newSequence];
+      }
+
+      console.log('Updated sequences array:', updatedSequences);
+
+      // First update the internal state
+      this.sequences = updatedSequences;
+
+      // Then update the attribute
+      this.setAttribute('sequences', JSON.stringify(updatedSequences));
+
+      // Force a render update
+      this.render();
+
+      // Regenerate colors for the new sequence
+      this.generateSequenceColors();
+
+      // Reset selection mode
+      this.selectionMode = false;
+      this.selectionStart = null;
+      this.selectionEnd = null;
+
+      // Close the modal
+      const modal = this.shadowRoot?.querySelector('.modal');
+      if (modal) {
+        modal.remove();
+      }
+
+      // Dispatch event to notify of changes
+      const event = new CustomEvent('sequenceupdate', {
+        detail: updatedSequences,
+        bubbles: true,
+        composed: true
+      });
+      this.dispatchEvent(event);
+
+    } catch (error) {
+      console.error('Error in handleSequenceFormSubmit:', error);
+      alert('Failed to add sequence. Please try again.');
+    }
+  }
+
+  // Add selection mode functionality
+  startSelectionMode() {
+    console.log('Starting selection mode'); // Debug log
+    this.selectionMode = true;
+    this.selectionStart = null;
+    this.selectionEnd = null;
+
+    // Update UI to show selection mode is active
+    const addBtn = this.shadowRoot?.querySelector('.add-sequence-btn');
+    if (addBtn) {
+      addBtn.classList.add('active');
+      addBtn.title = 'Click two cells to select sequence range';
+    }
+
+    // Force re-render to update styles
+    this.render();
   }
 
   showModal(content) {
@@ -250,11 +585,6 @@ class HexViewer extends HTMLElement {
     this.shadowRoot?.appendChild(modal);
   }
 
-  handleModalClose(e) {
-    const modal = e.target.closest('.modal');
-    modal?.remove();
-  }
-
   hex2ascii(hex) {
     const byte = parseInt(hex, 16);
     if (isNaN(byte) || byte === 0 || byte < 32 || byte > 126) {
@@ -262,6 +592,114 @@ class HexViewer extends HTMLElement {
     }
     return String.fromCharCode(byte);
   }
+
+  // Add this new method for handling the add selected button click
+  handleAddSelectedSequence() {
+    console.log('handleAddSelectedSequence called');
+    try {
+      if (this.selectionStart === null || this.selectionEnd === null) {
+        console.log('Selection incomplete', { start: this.selectionStart, end: this.selectionEnd });
+        return;
+      }
+
+      // Sort the indices to ensure start is always less than end
+      const [start, end] = [this.selectionStart, this.selectionEnd].sort((a, b) => a - b);
+      console.log('Creating sequence:', start, end);
+
+      // Create a proper sequence array and show modal
+      const newSequence = [start, end, '', undefined];
+
+      // Create and show the modal directly in the shadowRoot
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+
+      modal.innerHTML = `
+        <div class="modal-content">
+          <button class="close-btn">&times;</button>
+          <h2 class="modal-title">New Sequence</h2>
+          <div class="modal-body">
+            <form id="sequenceForm">
+              <div class="form-group">
+                <label>Start Index:</label>
+                <input type="number" id="startIndex" value="${start}" readonly>
+              </div>
+              <div class="form-group">
+                <label>End Index:</label>
+                <input type="number" id="endIndex" value="${end}" readonly>
+              </div>
+              <div class="form-group">
+                <label>Description:</label>
+                <textarea id="description" required></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="save-btn">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+
+      // Important: Append the modal to shadowRoot before adding event listeners
+      if (this.shadowRoot) {
+        try {
+          this.shadowRoot.appendChild(modal);
+          console.log('Modal appended to shadowRoot');
+
+          // Add event listeners
+          const form = modal.querySelector('#sequenceForm');
+          const closeBtn = modal.querySelector('.close-btn');
+
+          if (form) {
+            form.addEventListener('submit', (e) => {
+              e.preventDefault();
+              try {
+                this.handleSequenceFormSubmit(e, newSequence);
+              } catch (formError) {
+                console.error('Error in form submission:', formError);
+              }
+            });
+            console.log('Form submit listener added');
+          } else {
+            console.error('Form element not found in modal');
+          }
+
+          if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+              try {
+                modal.remove();
+                this.selectionMode = false;
+                this.selectionStart = null;
+                this.selectionEnd = null;
+                this.render();
+                console.log('Modal closed and selection reset');
+              } catch (closeError) {
+                console.error('Error closing modal:', closeError);
+              }
+            });
+            console.log('Close button listener added');
+          } else {
+            console.error('Close button not found in modal');
+          }
+        } catch (modalError) {
+          console.error('Error appending modal to shadowRoot:', modalError);
+          console.error('Modal HTML:', modal.outerHTML);
+          console.error('ShadowRoot state:', this.shadowRoot);
+        }
+      } else {
+        console.error('No shadowRoot found', this);
+      }
+    } catch (error) {
+      console.error('Error in handleAddSelectedSequence:', error);
+      console.error('Component state:', {
+        selectionMode: this.selectionMode,
+        selectionStart: this.selectionStart,
+        selectionEnd: this.selectionEnd,
+        shadowRoot: !!this.shadowRoot
+      });
+    }
+  }
+
+
 
   render() {
     if (!this.shadowRoot) return;
@@ -290,8 +728,93 @@ class HexViewer extends HTMLElement {
       `;
     };
 
-    const styles = document.createElement('style');
-    styles.textContent = `
+    const controls = `
+      <div class="controls">
+        <select id="width-select">
+          ${[8, 16, 24, 32].map(w =>
+            `<option value="${w}" ${w === this.lineWidth ? 'selected' : ''}>
+              Width: ${w}
+            </option>`
+          ).join('')}
+        </select>
+        <select id="theme-select">
+          ${Object.keys(this.themes).map(theme =>
+            `<option value="${theme}" ${theme === this.currentTheme ? 'selected' : ''}>
+              ${theme.replace('-', ' / ')}
+            </option>`
+          ).join('')}
+        </select>
+        <button class="add-sequence-btn" title="Add new sequence">+</button>
+        ${this.selectionMode ? `
+          <div class="status-display">
+            <span>Start:</span>
+            <input type="number"
+                   class="start-index"
+                   value="${this.selectionStart !== null ? this.selectionStart : ''}"
+                   min="0">
+            <span>End:</span>
+            <input type="number"
+                   class="end-index"
+                   value="${this.selectionEnd !== null ? this.selectionEnd : ''}"
+                   min="0">
+            <button class="add-selected-btn" type="button">Add Selected Sequence</button>
+          </div>
+        ` : ''}
+        <div id="offset-display">Offset: 00</div>
+      </div>
+    `;
+
+    const tables = `
+      <div class="tables-wrapper">
+        <div class="tables">
+          <table class="hex">
+            <tbody>
+              ${rows.map((row, rowIndex) => `
+                <tr>
+                  ${row.map((byte, colIndex) => {
+                    const index = rowIndex * this.lineWidth + colIndex;
+                    return renderCell(byte, index, false);
+                  }).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <table class="ascii">
+            <tbody>
+              ${rows.map((row, rowIndex) => `
+                <tr>
+                  ${row.map((byte, colIndex) => {
+                    const index = rowIndex * this.lineWidth + colIndex;
+                    return renderCell(byte, index, true);
+                  }).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    const infoPanel = `<div class="info-panel"></div>`;
+
+    // First, update the content
+    this.shadowRoot.innerHTML = `
+      <style>${this.generateStyles()}</style>
+      <div class="outer-wrapper">
+        ${controls}
+        ${tables}
+        ${infoPanel}
+      </div>
+    `;
+
+    // Then set up event listeners
+    requestAnimationFrame(() => {
+      this.setupEventListeners();
+    });
+  }
+
+  generateStyles() {
+    return `
       :host {
         --bg-color: ${this.themes[this.currentTheme].background};
         --text-color: ${this.themes[this.currentTheme].text};
@@ -303,7 +826,41 @@ class HexViewer extends HTMLElement {
         height: 100%;
       }
 
-      /* Scrollbar styling */
+      /* Your existing styles here */
+      .status-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 1rem;
+      }
+
+      .status-display input {
+        width: 4rem;
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid rgba(var(--text-color-rgb), 0.3);
+        border-radius: 2px;
+        padding: 0.1rem 0.3rem;
+        font-family: inherit;
+        font-size: 0.8rem;
+      }
+
+      .add-selected-btn {
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid var(--text-color);
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+      }
+
+      .add-selected-btn:hover {
+        background: rgba(var(--text-color-rgb), 0.1);
+      }
+
+      /* Rest of your existing styles */
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -395,7 +952,7 @@ class HexViewer extends HTMLElement {
         grid-template-columns: 1fr 1fr;
         gap: 0;
         margin-bottom: 0.25rem;
-        min-width: max-content;
+        minwidth: max-content;
       }
 
       table {
@@ -540,63 +1097,145 @@ class HexViewer extends HTMLElement {
           margin: 1rem;
         }
       }
-    `;
 
-    const tables = `
-      <div class="outer-wrapper">
-        <div class="controls">
-          <select id="width-select">
-            ${[8, 16, 24, 32].map(w =>
-              `<option value="${w}" ${w === this.lineWidth ? 'selected' : ''}>
-                Width: ${w}
-              </option>`
-            ).join('')}
-          </select>
-          <select id="theme-select">
-            ${Object.keys(this.themes).map(theme =>
-              `<option value="${theme}" ${theme === this.currentTheme ? 'selected' : ''}>
-                ${theme.replace('-', ' / ')}
-              </option>`
-            ).join('')}
-          </select>
-          <div id="offset-display">Offset: 00</div>
-        </div>
-        <div class="tables-wrapper">
-          <div class="tables">
-            <table class="hex">
-              <tbody>
-                ${rows.map((row, rowIndex) => `
-                  <tr>
-                    ${row.map((byte, colIndex) => {
-                      const index = rowIndex * this.lineWidth + colIndex;
-                      return renderCell(byte, index, false);
-                    }).join('')}
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-            <table class="ascii">
-              <tbody>
-                ${rows.map((row, rowIndex) => `
-                  <tr>
-                    ${row.map((byte, colIndex) => {
-                      const index = rowIndex * this.lineWidth + colIndex;
-                      return renderCell(byte, index, true);
-                    }).join('')}
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="info-panel"></div>
-      </div>
-    `;
+      .form-group {
+        margin-bottom: 1rem;
+      }
 
-    this.shadowRoot.innerHTML = '';
-    this.shadowRoot.appendChild(styles);
-    this.shadowRoot.innerHTML += tables;
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid rgba(var(--text-color-rgb), 0.2);
+        border-radius: 4px;
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-family: inherit;
+      }
+
+      .form-group textarea {
+        height: 100px;
+        resize: vertical;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1rem;
+      }
+
+      .save-btn,
+      .delete-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      .save-btn {
+        background: #4CAF50;
+        color: white;
+      }
+
+      .delete-btn {
+        background: #f44336;
+        color: white;
+      }
+
+      .add-sequence-btn {
+        padding: 0.2rem 0.5rem;
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid var(--text-color);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        line-height: 1;
+        transition: all 0.2s ease;
+      }
+
+      .add-sequence-btn.active {
+        background: rgba(var(--text-color-rgb), 0.2);
+        transform: rotate(45deg);
+      }
+
+      .add-sequence-btn:hover {
+        background: rgba(var(--text-color-rgb), 0.1);
+      }
+
+      .info-panel-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .edit-btn {
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid var(--text-color);
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.7rem;
+        transition: background-color 0.2s ease;
+      }
+
+      .edit-btn:hover {
+        background: rgba(var(--text-color-rgb), 0.2);
+      }
+
+      .modal-title {
+        margin: 0 0 1rem 0;
+        color: var(--text-color);
+      }
+      /* Selection mode styles */
+      .status-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 1rem;
+      }
+      .status-display input {
+        width: 4rem;
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid rgba(var(--text-color-rgb), 0.3);
+        border-radius: 2px;
+        padding: 0.1rem 0.3rem;
+        font-family: inherit;
+        font-size: 0.8rem;
+      }
+
+      .add-selected-btn {
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid var(--text-color);
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+      }
+
+      .add-selected-btn:hover {
+        background: rgba(var(--text-color-rgb), 0.1);
+      }
+      ${this.selectionMode ? `
+        td {
+          cursor: crosshair;
+        }
+      ` : ''}
+    `;
   }
+
 }
 
 customElements.define('hex-viewer', HexViewer);
